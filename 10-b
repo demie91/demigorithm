@@ -1,0 +1,38 @@
+import sys
+
+def main(lines):
+    for i, v in enumerate(lines):
+        if i == 0:
+            V = [int(x) for x in v.split()]
+            N, M = V[0], V[1]
+            route = [[10**9] * N for x in range(N)]
+        elif i <= M:
+            V = [int(x) for x in v.split()]
+            route[V[0]][V[1]] = V[2]
+        elif i == M + 1:
+            Q = int(v)
+            Query = []
+        else:
+            V = [int(x) for x in v.split()]
+            Query.append(V)
+    for x in range(N):
+        route[x][x] = 0
+    for k in range(N):
+        for i in range(N):
+            for j in range(N):
+                route[i][j] = min(route[i][j], route[i][k] + route[k][j])
+    return route, Query
+
+
+if __name__ == '__main__':
+    lines = []
+    for l in sys.stdin:
+        lines.append(l.rstrip('\r\n'))
+    route, Query = main(lines)
+for x in Query:
+    i = x[0]
+    j = x[1]
+    if route[i][j] != 10**9:
+        print(route[i][j])
+    else:
+        print("INF")
