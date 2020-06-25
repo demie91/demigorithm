@@ -1,0 +1,46 @@
+import sys
+import heapq
+
+def main(lines):
+    for i, v in enumerate(lines):
+        if i == 0:
+            V = [int(x) for x in v.split()]
+            N, M, S = V[0], V[1], V[2] #Sがスタート
+            route = [[] for x in range(N)]
+        else:
+            V = [int(x) for x in v.split()]
+            route[V[0]].append([V[1],V[2]]) #routeはリストのリストのリスト
+    dist = [10**9] * N
+    dist[S] = 0
+    node_dist = []
+    done = [False] * N
+    heapq.heapify(node_dist)
+    cur = S #現在のノード
+
+    while True:
+        done[cur] = True
+        for x in route[cur]: #xは[次のノード,距離]
+            if done[x[0]] == False and dist[cur] + x[1] < dist[x[0]]:
+                dist[x[0]] = dist[cur] + x[1]
+                heapq.heappush(node_dist, [dist[x[0]], x[0]])
+        if len(node_dist) == 0:
+            return dist
+
+        while True:
+            if len(node_dist) == 0:
+                return dist
+            tmp = heapq.heappop(node_dist)[1] #次のcurは最小
+            if done[tmp] == False:
+                cur = tmp #未訪問なら訪問
+                break
+
+if __name__ == '__main__':
+    lines = []
+    for l in sys.stdin:
+        lines.append(l.rstrip('\r\n'))
+    dist = main(lines)
+for x in dist:
+    if x != 10**9:
+        print(x)
+    else:
+        print("INF")
