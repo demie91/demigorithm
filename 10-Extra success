@@ -1,0 +1,84 @@
+import sys
+import heapq
+
+def main(lines):
+
+    for i, v in enumerate(lines):
+        if i == 0:
+            T = int(v)
+            turn = 0
+            ls = []
+        elif turn == 0:
+            V = [int(x) for x in v.split()]
+            N, M = V[0], V[1]
+            route = [[] for x in range(N)]
+            turn = 1
+            count = 0
+        elif turn == 1:
+            V = [int(x) for x in v.split()]
+            a = V[0]-1
+            b = V[1]-1
+            route[a].append([b,V[2]*2])
+            route[b].append([a,V[2]*2])
+            count += 1
+            if count == M:
+                turn = 2
+        else:
+            cost = [int(x) for x in v.split()]
+            ls.append([route,cost])
+            turn = 0
+    
+    return ls     
+    #case:１番外→caseごと(T個)→route/閲覧cost→route
+
+def dykptra(route, S):
+        N = len(route)
+        dist = [10**9] * N
+        dist[S] = 0
+        node_dist = []
+        done = [False] * N
+        heapq.heapify(node_dist)
+        cur = S #現在のノード
+
+        while True:
+            done[cur] = True
+            for x in route[cur]: #xは[次のノード,距離]
+                if done[x[0]] == False and dist[cur] + x[1] < dist[x[0]]:
+                    dist[x[0]] = dist[cur] + x[1]
+                    heapq.heappush(node_dist, [dist[x[0]], x[0]])
+                if len(node_dist) == 0:
+                    return dist
+
+            while True:
+                if len(node_dist) == 0:
+                    return dist
+
+                tmp = heapq.heappop(node_dist)[1] #次のcurは最小
+                if done[tmp] == False:
+                    cur = tmp #未訪問なら訪問
+                    break
+    
+def save_money(ls):
+    answer = []
+    for case in ls:
+        route = case[0]
+        N = len(route)
+        cost = case[1]
+        for x in range(N):
+            route[x].append([N, cost[x]])
+        route.append([])
+        for x in range(N):
+            route[N].append([x, cost[x]])
+        part = dykptra(route, N)
+        answer.append(part[:-1])
+    return answer
+
+if __name__ == '__main__':
+    lines = []
+    for l in sys.stdin:
+        lines.append(l.rstrip('\r\n'))
+    ls = main(lines)
+
+answer = save_money(ls)
+for x in answer:
+   print(' '.join(map(str, x)))
