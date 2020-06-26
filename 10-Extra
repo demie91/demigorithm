@@ -1,0 +1,64 @@
+import sys
+sys.setrecursionlimit(1000000)
+
+def main(lines):
+
+    for i, v in enumerate(lines):
+        if i == 0:
+            T = int(v)
+            turn = 0
+            ls = []
+        elif turn == 0:
+            V = [int(x) for x in v.split()]
+            N, M = V[0], V[1]
+            route = [[10**9]*N for x in range(N)]
+            turn = 1
+            count = 0
+        elif turn == 1:
+            V = [int(x) for x in v.split()]
+            a = V[0]-1
+            b = V[1]-1
+            route[a][b] = V[2]
+            route[b][a] = V[2]
+            count += 1
+            if count == M:
+                for x in range(N):
+                    route[x][x] = 0
+                turn = 2
+        else:
+            cost = [int(x) for x in v.split()]
+            ls.append([route,cost])
+            turn = 0
+    
+    return ls       
+    #case:１番外→caseごと(T個)→route/閲覧cost→route
+    
+def save_money(ls):
+    answer = []
+    for case in ls:
+        route = case[0]
+        cost = case[1]
+        N = len(route)
+        for k in range(N):
+            for i in range(N):
+                for j in range(N):
+                    route[i][j] = min(route[i][j], route[i][k] + route[k][j])
+        minians = []
+        for i in range(N):
+            temp = cost[i]
+            for j in range(N):
+                if temp > 2*route[i][j] + cost[j]:
+                    temp = 2*route[i][j] + cost[j]
+            minians.append(temp)
+        answer.append(minians)
+        
+    return answer
+
+if __name__ == '__main__':
+    lines = []
+    for l in sys.stdin:
+        lines.append(l.rstrip('\r\n'))
+    ls = main(lines)
+answer = save_money(ls)
+for x in answer:
+    print(' '.join(map(str, x)))
