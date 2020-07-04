@@ -1,0 +1,48 @@
+import sys
+
+def main(lines):
+
+    for i, v in enumerate(lines):
+        if i == 0:
+            V = [int(x) for x in v.split()]
+            N, M = V[0], V[1]
+            route = [[] for x in range(N)]
+        else:
+            V = [int(x) for x in v.split()]
+            route[V[0]-1].append([V[1]-1,V[2]]) #インデックスは-1
+            route[V[1]-1].append([V[0]-1, 0]) #逆流用
+    return N, route
+
+def dfs_ff(s,e,flow): #sからeへ流せる流量を求める関数;flowはsまでの最大流量
+    if s == e:
+        return flow
+    else:
+        visit[s] = True
+        for i, x in enumerate(route[s]):
+            if (not visit[x[0]]) and (x[1] != 0): #x[0]:次のノード;x[1]:パスの流量
+                f = dfs_ff(x[0], e, min(x[1], flow))
+                if f > 0:
+                    route[s][i][1] -= f #順方向の流量減少
+                    for j, y in enumerate(route[x[1]]): #逆方向の流量追加
+                        if y[0] == x[0]:
+                            route[x[0]][j][1] += f
+                            break
+                    print(f)
+                    return f
+        return 0
+
+if __name__ == '__main__':
+    lines = []
+    for l in sys.stdin:
+        lines.append(l.rstrip('\r\n'))
+    N, route = main(lines)
+
+max_flow = 0
+while True:
+    visit = [False] * N
+    flow = dfs_ff(0, N-1, 10**9)
+    max_flow += flow
+    if not flow:
+        break
+print(max_flow) 
+     
