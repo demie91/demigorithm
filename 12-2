@@ -1,0 +1,38 @@
+import sys
+import heapq
+
+def main(lines):
+
+    for i, v in enumerate(lines):
+        if i == 0:
+            V = [int(x) for x in v.split()]
+            N, M = V[0], V[1]
+            route = [[] for _ in range(N)]
+        else:
+            V = [int(x) for x in v.split()]
+            route[V[0]].append([V[2],V[0],V[1]])
+            route[V[1]].append([V[2],V[1],V[0]])
+    
+    e_heapq = []
+    heapq.heapify(e_heapq)
+    ans = 0
+    included = [False]*N
+    included[0] = True #ノード0からスタート
+    for ls in route[0]:
+        heapq.heappush(e_heapq,ls)
+    while e_heapq:
+        tmp = heapq.heappop(e_heapq)
+        if not included[tmp[2]]:
+            cur = tmp[2]
+            included[cur] = True
+            for ls in route[cur]:
+                heapq.heappush(e_heapq, ls)
+            ans += tmp[0]
+    
+    print(ans)
+
+if __name__ == '__main__':
+    lines = []
+    for l in sys.stdin:
+        lines.append(l.rstrip('\r\n'))
+    main(lines)
