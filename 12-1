@@ -1,0 +1,56 @@
+import sys
+
+def main(lines):
+
+    for i, v in enumerate(lines):
+        if i == 0:
+            V = [int(x) for x in v.split()]
+            N, M = V[0], V[1]
+            dist = []
+        else:
+            V = [int(x) for x in v.split()]
+            dist.append([V[2],V[0],V[1]]) #距離、辺の順にする
+    return N, M, dist
+
+class UnionTree:
+    def __init__(self,n):
+        self.parent = [i for i in range(n)] #親は自分から
+        self.height = [0 for _ in range(n)] #高さは0から
+    def get_root(self,i):
+        if self.parent[i] == i: # 自分が根ノードの場合
+            return i
+        else: # 経路圧縮しながら根ノードを探す
+            self.parent[i] = self.get_root(self.parent[i])
+            return self.parent[i]
+    def unite(self, i, j):
+        root_i = self.get_root(i)
+        root_j = self.get_root(j)
+        if root_i != root_j: # より高い方にマージ
+            if self.height[root_i] < self.height[root_j]:
+                self.parent[root_i] = root_j
+            else:
+                self.parent[root_j] = root_i
+                if self.height[root_i] == self.height[root_j]:
+                    self.height[root_i] += 1
+    def is_in_group(self, i, j):
+        if self.get_root(i) == self.get_root(j):
+            return True
+        else:
+            return False
+
+def kruskal(n, ls):
+    Union = UnionTree(n)
+    ans = 0 #重み
+    ls.sort()
+    for route in ls:
+        if not Union.is_in_group(route[1], route[2]):
+            Union.unite(route[1], route[2])
+            ans += route[0]
+    print(ans)
+
+if __name__ == '__main__':
+    lines = []
+    for l in sys.stdin:
+        lines.append(l.rstrip('\r\n'))
+    N, M, dist = main(lines)
+kruskal(N, dist)
