@@ -1,0 +1,9 @@
+#python
+#a**m%mod=
+def power(a,m,mod):
+    if m == 0:
+        return 1
+    elif m%2 == 0:
+        return power(a*a%mod,m//2,mod)%mod
+    else:
+        return a*power(a,m-1,mod)%mod
