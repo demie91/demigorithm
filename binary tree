@@ -1,0 +1,60 @@
+class binary_tree:
+    def __init__(self,n):
+        self.tree = [None]*n
+        self.ln = n
+        self.num = 0
+    def node(self,n):
+        return self.tree[n]
+    def parent(self,n):
+        if n >= 1:
+            return self.tree[(n-1)//2]
+        else:
+            return -1
+    def right_child(self,n):
+        if 2*n+2 < self.ln:
+            return self.tree[2*n+2]
+        else:
+            return -1
+    def left_child(self,n):
+        if 2*n+1 < self.ln:
+            return self.tree[2*n+1]
+        else:
+            return -1
+    def add(self,n):
+        def compare(m):
+            if m == 0:
+                return
+            elif self.parent(m) > self.node(m):
+                self.tree[(m-1)//2], self.tree[m] = self.node(m), self.parent(m)
+                return compare((m-1)//2)
+        if self.num < self.ln:
+            self.tree[self.num] = n
+            compare(self.num)
+            self.num += 1
+        else:
+            print("this tree is full")
+    def delete(self,n):
+        def compare(m):
+            if self.left_child(m) == None or self.left_child(m) == -1:
+                return
+            elif self.right_child(m) == None or self.right_child(m) == -1:
+                if self.node(m) > self.left_child(m):
+                    self.tree[m], self.tree[2*m+1] = self.left_child(m), self.node(m)
+                    return compare(2*m+1)
+            else:
+                if self.node(m) > self.left_child(m) or self.node(m) > self.right_child(m):
+                    if self.left_child(m) < self.right_child:
+                        self.tree[m], self.tree[2*m+1] = self.left_child(m), self.node(m)
+                        return compare(2*m+1)
+                    else:
+                        self.tree[m], self.tree[2*m+2] = self.right_child(m), self.node(m)
+                        return compare(2*m+2)
+        if n >= self.num:
+            print("there is no node")
+        else:
+            if self.num == 1:
+                self.tree[0] = None
+            else:
+                self.tree[n] = self.tree[self.num-1]
+                self.tree[self.num-1] = None
+                compare(n)
